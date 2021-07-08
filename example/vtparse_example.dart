@@ -3,8 +3,7 @@ import 'dart:io';
 
 import 'package:vtparse/vtparse.dart';
 
-final CR = 10;
-final LF = 13;
+final q = 'q'.codeUnitAt(0);
 
 void main() async {
   // Don't echo the things typed
@@ -29,7 +28,7 @@ void main() async {
     // to close the stream if we used stdin.expand above. Using our own stream
     // gives us the ability to close things properly if we're done taking user
     // input.
-    if (event.action == VTAction.print && event.ch == 113) {
+    if (event.action == VTAction.print && event.ch == q) {
       _stdioSubscription.cancel();
       _stdioByteController.close();
     }
