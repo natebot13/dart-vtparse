@@ -64,14 +64,14 @@ class VTStateMachine {
   ///
   static const int _MAX_INTERMEDIATE_BYTES = 2;
 
-  final intermediateBytes = <int>[];
+  final _intermediateBytes = <int>[];
 
   /// Maximum number of parameters to collect.
   /// If more than this many parameters are encountered by Action.PARAM,
   /// the extra parameters are simply ignored.
   static const int _MAX_PARAMS = 16;
 
-  final params = <int>[];
+  final _params = <int>[];
   int _currentParam = 0;
 
   final _machine = Machine<_State>();
@@ -376,22 +376,22 @@ class VTStateMachine {
     switch (action) {
       // Actions to hand off to emulator:
       case _ParseAction.csiDispatch:
-        if (intermediateBytes.length <= _MAX_INTERMEDIATE_BYTES) {
-          _sendEvent(VTAction.csiDispatch, byte, intermediateBytes, params);
+        if (_intermediateBytes.length <= _MAX_INTERMEDIATE_BYTES) {
+          _sendEvent(VTAction.csiDispatch, byte, _intermediateBytes, _params);
         }
         break;
       case _ParseAction.dcsHook:
-        if (intermediateBytes.length <= _MAX_INTERMEDIATE_BYTES) {
-          _sendEvent(VTAction.dcsHook, byte, intermediateBytes, params);
+        if (_intermediateBytes.length <= _MAX_INTERMEDIATE_BYTES) {
+          _sendEvent(VTAction.dcsHook, byte, _intermediateBytes, _params);
         }
         break;
       case _ParseAction.dcsPut:
-        if (intermediateBytes.length <= _MAX_INTERMEDIATE_BYTES) {
+        if (_intermediateBytes.length <= _MAX_INTERMEDIATE_BYTES) {
           _sendEvent(VTAction.dcsPut, byte);
         }
         break;
       case _ParseAction.dcsUnhook:
-        if (intermediateBytes.length <= _MAX_INTERMEDIATE_BYTES) {
+        if (_intermediateBytes.length <= _MAX_INTERMEDIATE_BYTES) {
           _sendEvent(VTAction.dcsUnhook);
         }
         break;
@@ -399,8 +399,8 @@ class VTStateMachine {
         _sendEvent(VTAction.error);
         break;
       case _ParseAction.escDispatch:
-        if (intermediateBytes.length <= _MAX_INTERMEDIATE_BYTES) {
-          _sendEvent(VTAction.escapeDispatch, byte, intermediateBytes);
+        if (_intermediateBytes.length <= _MAX_INTERMEDIATE_BYTES) {
+          _sendEvent(VTAction.escapeDispatch, byte, _intermediateBytes);
         }
         break;
       case _ParseAction.execute:
@@ -429,28 +429,28 @@ class VTStateMachine {
         break;
 
       case _ParseAction.collect:
-        intermediateBytes.add(byte);
+        _intermediateBytes.add(byte);
         break;
 
       case _ParseAction.param:
         if (byte == ';'.codeUnitAt(0)) {
           // go to next param
           // note that if param string starts with ';' then we jump to 2nd param
-          params.add(0);
+          _params.add(0);
           _currentParam++;
-        } else if (params.length <= _MAX_PARAMS) {
+        } else if (_params.length <= _MAX_PARAMS) {
           // the character is a digit, and we haven't reached MAX_PARAMS
-          params[_currentParam] *= 10;
-          params[_currentParam] += (byte - '0'.codeUnitAt(0));
+          _params[_currentParam] *= 10;
+          _params[_currentParam] += (byte - '0'.codeUnitAt(0));
         }
         break;
     }
   }
 
   void _clear() {
-    intermediateBytes.clear();
-    params.clear();
-    params.add(0);
+    _intermediateBytes.clear();
+    _params.clear();
+    _params.add(0);
     _currentParam = 0;
   }
 

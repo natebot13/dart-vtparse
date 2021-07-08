@@ -1,7 +1,7 @@
 name: vtparse
 description: A pure dart library for generating virtual terminal events from a stream of bytes
 version: 1.0.0
-repository: http://github.com/natebot13/dart-vtparse
+repository: https://github.com/natebot13/dart-vtparse
 
 environment:
   sdk: '>=2.12.0 <3.0.0'
